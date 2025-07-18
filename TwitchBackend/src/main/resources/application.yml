@@ -1,0 +1,62 @@
+#logging:
+#  level:
+#    org.apache.coyote.http11.Http11InputBuffer: DEBUG #%20Incoming%20HTTP%20requests
+#
+#spring:
+#  jackson:
+#    default-property-inclusion: non_null #only include non-null
+
+
+spring:
+  jackson:
+    default-property-inclusion: non_null
+  cloud:
+    openfeign:
+      oauth2:
+        enabled: true
+        clientRegistrationId: twitch
+      client:
+        config:
+          twitch-api:
+              url: https://api.twitch.tv/helix
+              loggerLevel: basic
+              default-request-headers:
+                Client-Id: "hqcw4r72mxc5qmp3ll31p7etch62qc"
+
+  security:
+    oauth2:
+      client:
+        registration:
+            twitch:
+                authorization-grant-type: client_credentials
+                client-authentication-method: client_secret_post
+                client-id: "hqcw4r72mxc5qmp3ll31p7etch62qc"
+                client-secret: "ijiimiy6kwjdcwlzamtr7ygd5pcfp7"
+        provider:
+            twitch:
+              token-uri: https://id.twitch.tv/oauth2/token
+
+  datasource:
+    url: jdbc:mysql://${DATABASE_URL:localhost}:3306/twitch?createDatabaseIfNotExist=true
+    username: ${DATABASE_USERNAME:root}
+    password: ${DATABASE_PASSWORD:secret}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#   specify username, password (docker)
+#   连接的第一次
+  sql:
+    init:
+      mode: always
+#   每一次都执行database-init
+      schema-locations: "classpath:database-init.sql"
+  cache:
+    caffeine:
+      spec: expireAfterWrite=1m
+      # 一分钟后会过期 1m
+      #cache
+
+logging:
+  level:
+    org.apache.coyote.http11.Http11InputBuffer: DEBUG #%20Incoming%20HTTP%20requests
+    com.laioffer.twitch.external.TwitchApiClient: DEBUG
+    org.springframework.jdbc.core: DEBUG #SQL
+
